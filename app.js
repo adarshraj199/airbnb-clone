@@ -1,3 +1,9 @@
+if(process.env.NODE_ENV != "production"){
+require('dotenv').config();
+}
+
+
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -10,10 +16,12 @@ const listings = require("./routes/listing.js");
 const reviews = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const session = require("express-session");
+const {MongoStore} = require('connect-mongo');
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
+const  dbUrl = process.env.ATLAS_DB;
 
 main()
 .then(()=>{
@@ -22,7 +30,7 @@ main()
 .catch(err => console.log(err));
 
 async function main() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/airbnb-clone');
+  await mongoose.connect(dbUrl);
 
 }
 
@@ -33,9 +41,16 @@ app.use(methodOverride('_method'));
 app.engine('ejs', ejsMate);
 app.use(express.static(path.join(__dirname ,"public")))
 
-
+const store = MongoStore.create({
+    mongoUrl:dbUrl ,
+    crypto:{
+        secret:"mysupersecret" ,
+    },
+    touchAfter: 24*60*60 ,
+});
 
 const sessionOptions = {
+    store,
     secret: "mysupersecret" ,
     saveUninitialized: true ,
     resave: false ,

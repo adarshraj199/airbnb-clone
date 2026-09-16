@@ -5,58 +5,22 @@ const wrapAsync = require("../utils/wrapAsync");
 const passport = require("passport");
 const { any } = require("joi");
 const { savedRedirectUrl } = require("../middleware.js");
+const userController = require("../controllers/user.js");
 
-router.get("/signup" , (req,res)=> {
-res.render("users/signup.ejs");
-});
+router.get("/signup" , userController.getsignup);
 
-router.post("/signup" ,wrapAsync( async(req,res)=> {
-   try{
-     let {username , email , password} = req.body ;
-    const newUser = new User({username , email});
-    const registeredUser = await User.register(newUser , password);
+router.post("/signup" ,wrapAsync(userController.postSignup));
 
-    req.login(registeredUser , (err)=>{
-        if(err){
-            return next(err);
-        }
-
-    req.flash("sucess" ,"welcome to airbnb-clone");
-    res.redirect("/listings");
-    })
-  
-   } catch(e){
-    req.flash("error" , e.message);
-    res.redirect("/signup");
-   }
-}));
-
-router.get("/login" ,(req,res)=> {
-    res.render("users/login.ejs");
-});
+router.get("/login" ,userController.getLogin);
 
 router.post("/login" ,
     savedRedirectUrl,
      passport.authenticate("local" 
     , {failureRedirect: "/login" 
         , failureFlash: true,}) , 
-async(req,res)=>{
-    req.flash("sucess" , "welcome back to airbnb-clone");
-    let redirectUrl = res.locals.redirectUrl || "/listings";
-    res.redirect(redirectUrl);
-
-})
+userController.postLogin);
 
 
-router.get("/logout" , (req,res)=> {
-    req.logout((err)=> {
-        if(err){
-            return next(err);
-        }
-    
-    req.flash("sucess" , "you're logged out now ");
-    res.redirect("/listings");
-    })
-});
+router.get("/logout" , userController.logout);
 
 module.exports = router;
