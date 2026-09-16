@@ -44,14 +44,14 @@ app.use(express.static(path.join(__dirname ,"public")))
 const store = MongoStore.create({
     mongoUrl:dbUrl ,
     crypto:{
-        secret:"mysupersecret" ,
+        secret: process.env.SECRET ,
     },
     touchAfter: 24*60*60 ,
 });
 
 const sessionOptions = {
     store,
-    secret: "mysupersecret" ,
+    secret: process.env.SECRET ,
     saveUninitialized: true ,
     resave: false ,
     cookie: {
