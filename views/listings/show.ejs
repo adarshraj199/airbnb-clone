@@ -12,7 +12,7 @@
       <div class="card col-6 offset-3 show-card" >
   <img src="<%=listing.image.url %>" class="card-img-top show-img" alt="listing_image">
   <div class="card-body">
-    <p>Created by: <%=listing.owner.username %></p>
+    <p>Created by: <%= listing.owner ? listing.owner.username : "Airbnb" %></p>
     <p class="card-text"><%=listing.description %>  </p>
      <p> <b> &#8377;<%=listing.price.toLocaleString('en-IN') %> </b> </p> 
        <p> <%=listing.location %>  </p>
@@ -21,7 +21,7 @@
     </p>
   </div>
 </div>
-<% if( currUser && currUser._id.equals(listing.owner._id)) {%>
+<% if(currUser && listing.owner && currUser._id.equals(listing.owner._id)) {%>
 
 <div class="update-btns">
 
@@ -87,7 +87,7 @@
 <% for(let review of listing.reviews) {%>
   <div class=" col-4 mb-3 ms-3" style="border: solid 1px black;">
     <div class="card-body">
-      <h6>@<%=review.author.username %></h6>
+      <h6>@<%= review.author ? review.author.username : "Deleted user" %></h6>
        <p class="starability-result" data-rating="<%=review.rating %>"> </p>
       <p><%=review.comment %></p>
       

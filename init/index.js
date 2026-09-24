@@ -1,28 +1,41 @@
 const mongoose = require("mongoose");
 const initData = require("./data.js");
 const Listing = require("../models/listings.js");
+const User = require("../models/user.js");
 
 
-main()
-.then(()=>{
-    console.log("connected to Db");
-})
-.catch(err => console.log(err));
+if (process.env.NODE_ENV != "production") {
+  require('dotenv').config();
+}
+
 
 async function main() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/airbnb-clone');
-
+  const dbUrl = process.env.ATLAS_DB;
+  await mongoose.connect(dbUrl);
 }
 
 const initDB = async ()=>{
-    await Listing.deleteMany({});
-  initData.data = initData.data.map((obj)=> ({
-    ...obj ,
-    owner: '6a9fae7f2e1fb4a55ff6fe48' ,
-  }));
+    const seedOwner = await User.findOne();
+    if (!seedOwner) {
+      throw new Error("Create a user before running the seed script.");
+    }
 
-    await Listing.insertMany(initData.data);
+    await Listing.deleteMany({});
+    const listings = initData.data.map((obj)=> ({
+      ...obj,
+      owner: seedOwner._id,
+    }));
+
+    await Listing.insertMany(listings);
     console.log("data was initialised");
 };
 
-initDB();
+main()
+  .then(async () => {
+    console.log("connected to Db");
+    await initDB();
+  })
+  .catch((err) => {
+    console.error("Unable to initialise data:", err.message);
+    process.exit(1);
+  });

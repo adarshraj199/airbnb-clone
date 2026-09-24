@@ -22,17 +22,7 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 const  dbUrl = process.env.ATLAS_DB;
-
-main()
-.then(()=>{
-    console.log("connected to Db");
-})
-.catch(err => console.log(err));
-
-async function main() {
-  await mongoose.connect(dbUrl);
-
-}
+// const PORT = process.env.PORT || 8080;
 
 app.set("view engine" , "ejs");
 app.set("views" , path.join(__dirname, "views"));
@@ -110,6 +100,34 @@ app.use((err,req,res,next)=>{
     let {statusCode=500 , message="Something went wrong" } = err;
     res.status(statusCode).render("includes/Error.ejs" ,{message});
 });
-app.listen("8080" , ()=>{
-    console.log("server is working");
+// async function startServer() {
+//     if (!dbUrl) {
+//         throw new Error("ATLAS_DB is not set in .env");
+//     }
+
+//     await mongoose.connect(dbUrl);
+//     console.log("connected to Db");
+
+//     app.listen(PORT, () => {
+//         console.log(`server is working on port ${PORT}`);
+//     });
+// }
+
+// startServer().catch((err) => {
+//     console.error("Unable to start the server:", err.message);
+//     process.exit(1);
+// });
+
+main()
+  .then(() => {
+    console.log("connected to Db");
+  })
+  .catch(err => console.log(err));
+
+async function main() {
+  await mongoose.connect(dbUrl);
+}
+
+app.listen("8080", () => {
+  console.log("server is working");
 });
