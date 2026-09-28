@@ -64,8 +64,7 @@ passport.use( new LocalStrategy(User.authenticate()));
 
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-app.use((err,req,res,next)=>{
-  console.log(err);
+app.use((req,res,next)=>{
     res.locals.sucessMsg = req.flash("sucess");
     res.locals.errorMsg = req.flash("error");
     res.locals.currUser = req.user;
