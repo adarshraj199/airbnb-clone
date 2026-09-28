@@ -24,6 +24,8 @@ const User = require("./models/user.js");
 const  dbUrl = process.env.ATLAS_DB;
 // const PORT = process.env.PORT || 8080;
 
+
+
 app.set("view engine" , "ejs");
 app.set("views" , path.join(__dirname, "views"));
 app.use(express.urlencoded({extended:true}));
@@ -45,7 +47,7 @@ const sessionOptions = {
     saveUninitialized: true ,
     resave: false ,
     cookie: {
-        expires: Date.now() + 7*24*60*60*1000 ,
+        maxAge: Date.now() + 7*24*60*60*1000 ,
        
         httpOnly: true,
     },
@@ -62,13 +64,14 @@ passport.use( new LocalStrategy(User.authenticate()));
 
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-
-app.use((req,res,next)=>{
+app.use((err,req,res,next)=>{
+  console.log(err);
     res.locals.sucessMsg = req.flash("sucess");
     res.locals.errorMsg = req.flash("error");
     res.locals.currUser = req.user;
     next();
 })
+
 
 
 // app.get("/demouser" , async(req,res)=>{
